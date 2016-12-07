@@ -72,9 +72,6 @@ class GMODataParser {
 				counter++;
 			}
 			
-				
-			// tsv
-			// repeat EventID, crop, geneSource, gmTrait, developer for each country in approvals, add food, feed and cultivation fields
 			gmoDataParser.writeDataToTSV(eventRowList, "data.tsv");
 										
 		} catch(Exception e) {
