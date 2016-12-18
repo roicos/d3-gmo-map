@@ -15,6 +15,7 @@ class GMODataParser {
 	class EventRow{
 		
 		public int id; // EventID
+		// TODO: name, we will group events by name to obtain cultivars
 		public String crop;
 		public List <String> geneSource;
 		public List <String> gmTrait;
