@@ -15,7 +15,7 @@ class GMODataParser {
 	class EventRow{
 		
 		public int id; // EventID
-		// TODO: name, we will group events by name to obtain cultivars
+		// TODO: name, we will group events by name to obtain sorts
 		public String crop;
 		public List <String> geneSource;
 		public List <String> gmTrait;
@@ -143,6 +143,8 @@ class GMODataParser {
 			e.printStackTrace();
 		}
 	}
+
+	// TODO: public String getName(String data);
 	
 	public String getCrop(String data){		
 		Pattern pattern = Pattern.compile("<p>Crop: <a href=\"/gmapprovaldatabase/crop/default\\.asp\\?CropID=\\d+\"><em>[a-zA-Z\\s\\.]+</em> - ([a-zA-Z\\s,\\.\\(\\)]+)</a></p>");
@@ -151,7 +153,7 @@ class GMODataParser {
 		while (matcher.find()) {
 			allMatches.add(matcher.group(1));
 		}				
-		return allMatches.get(0);
+		return allMatches.get(0).trim();
 	}
 	
 	public String getDeveloper(String data){
@@ -162,7 +164,7 @@ class GMODataParser {
 		while (matcher.find()) {
 			allMatches.add(matcher.group(1));
 		}				
-		return allMatches.get(0);
+		return allMatches.get(0).trim();
 	}
 	
 	public List<String> getGMTrait(String data){
@@ -185,7 +187,7 @@ class GMODataParser {
 		pattern = Pattern.compile("<a href=\"/gmapprovaldatabase/gmtrait/default\\.asp\\?TraitID=\\d+&GMTrait=[a-zA-Z\\s,\\.\\(\\)-/]+\\\">([a-zA-Z\\s,\\.\\(\\)-/]+)</a>");
 		matcher = pattern.matcher(outer);		
 		while (matcher.find()) {
-			result.add(matcher.group(1));
+			result.add(matcher.group(1).trim());
 		}
 		return result;
 	}
@@ -205,9 +207,9 @@ class GMODataParser {
 				NodeList tds = ((Element) tr).getElementsByTagName("td");
 				if(((Element) tds.item(1)).getElementsByTagName("em").getLength() > 0){
 					Node em = ((Element) tds.item(1)).getElementsByTagName("em").item(0);
-					result.add(em.getTextContent());
+					result.add(em.getTextContent().trim());
 				} else {
-					result.add(tds.item(1).getTextContent());
+					result.add(tds.item(1).getTextContent().trim());
 				}				
 			}
 		} catch (Exception e) {
@@ -235,7 +237,7 @@ class GMODataParser {
 				EventRow.Approval approval = eventRow.new Approval();
 				// country
 				Node a = ((Element) tds.item(0)).getElementsByTagName("a").item(0);
-				approval.country = a.getTextContent();
+				approval.country = a.getTextContent().trim();
 				// food
 				Node spanFood = ((Element) tds.item(1)).getElementsByTagName("span").item(0);
 				String spanFoodId = spanFood.getAttributes().getNamedItem("id").getNodeValue();
