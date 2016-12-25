@@ -10,5 +10,4 @@ Feedback:
 Resources:
 	-https://www.udacity.com/course/data-visualization-and-d3js--ud507   # d3 course and examples
 	-http://www.isaaa.org/gmapprovaldatabase/default.asp  # gmo approval data
-	-http://gothos.info/2009/02/centroids-for-countries/  # contries coordinates
-	-http://data.okfn.org/data/core/country-list          # countries codes
+	-https://restcountries.eu/         # countries codes

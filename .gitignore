@@ -1,2 +1,5 @@
 d3-gmo-map.iml
 .idea/
+lib/
+out/
+pom.xml

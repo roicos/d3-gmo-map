@@ -26,7 +26,7 @@ function draw(geo_data) {
         .data(geo_data.features)
         .enter()
         .append('path')
-        .attr('name', function(d){return d.properties.name;})
+        .attr('name', function(d){return d.id;})
         .attr('d', path)
         .style('fill', '#e4eaa2')
         .style('stroke', '#3c4b52')
@@ -36,7 +36,7 @@ function draw(geo_data) {
     // helpers
 
     function getCentroid(country){
-        var selector = "[name="+country+"]";
+        var selector = '[name~='+country.trim()+']';
         var centroid = path.centroid(d3.select(selector).datum());
         return centroid;
     }
@@ -60,19 +60,18 @@ function draw(geo_data) {
     d3.tsv(pathToData, function(error, data) {
 
         var dataNested = d3.nest()
-            .key(function(d) { return calculateYear(d);})
-            .key(function(d) { return d.country;})
-            .key(function(d) { return d.crop;})
+            .key(function(d) { return calculateYear(d); })
+            .key(function(d) { return d.country; })  // TODO: change to countryCode
+            .key(function(d) { return d.crop; })
             .entries(data);
 
-        var dataFiltered = dataNested.filter(function(value){return value.key == "2000"});
+        var dataFiltered = dataNested.filter(function(value){return value.key == "1993"});
 
-        console.log(dataFiltered[0].values);  // TODO: get access to particular event / number of events
-
-        // year --> country --> crop --> name --> leaves(name, geneSource, gmTrait etc.)
+        console.log(dataFiltered[0].values);
+        // year --> country --> crop --> tradeName --> leaves(name, geneSource, gmTrait etc.)
 
         // functions:
-        // countSorts(crop, country, year),
+        // countTradeNames(crop, country, year),
         // countCrops(country, year),
 
         var dataExample = [
@@ -85,16 +84,17 @@ function draw(geo_data) {
         svg.append("g")
             .attr("class", "data")
             .selectAll("circle")
-            .data(dataExample)
+          //  .data(dataExample)
+            .data(dataFiltered[0].values)
             .enter()
             .append("circle")
-            .attr('cx', function(d) { return getCentroid(d.country)[0]; })
-            .attr('cy', function(d) { return getCentroid(d.country)[1];})
+            .attr('cx', function(d) { return getCentroid(d.key)[0]; })
+            .attr('cy', function(d) { return getCentroid(d.key)[1];})
             .style('fill', '#8aa26e')
             .style('stroke', '#244e04')
             .attr("r", 0)
             .transition()
-            .attr('r', function(d) { return d.value; });
+            .attr('r', function(d) { return d.values.length; });
 
 
         // http://stackoverflow.com/questions/25881186/d3-fill-shape-with-image-using-pattern  - how to implement icons

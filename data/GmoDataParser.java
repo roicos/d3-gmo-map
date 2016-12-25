@@ -2,20 +2,26 @@ import java.net.URL;
 import java.lang.Exception;
 import java.io.*;
 import java.lang.StringBuilder;
-import java.util.regex.Matcher;  
+import java.util.regex.Matcher;
 import java.util.regex.Pattern; 
 import java.util.List;
 import java.util.ArrayList;
 import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.*;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.w3c.dom.*;
 
 class GMODataParser {
-	
+
+	private Object kjkj;
+
 	class EventRow{
 		
 		public int id; // EventID
-		// TODO: name, we will group events by name to obtain sorts
+        public String tradeName;
 		public String crop;
 		public List <String> geneSource;
 		public List <String> gmTrait;
@@ -24,18 +30,19 @@ class GMODataParser {
 		
 		@Override
 			public String toString(){
-				return "Crop: " + crop + ", geneSource: " + geneSource + ", gmTrait: " + gmTrait + ", developer: " + developer + " approvals: " + approvals;
+				return "Crop: " + crop + ", tradeName: " +tradeName + ", geneSource: " + geneSource + ", gmTrait: " + gmTrait + ", developer: " + developer + " approvals: " + approvals;
 			}
 		
 		class Approval {
 			public String country;
+            public String countryCode;
 			public int food;
 			public int feed;
 			public int cultivation;
 			
 			@Override
 			public String toString(){
-				return "Country: " + country + ", food: " + food + ", feed: " + feed + ", cultivation: " + cultivation;
+				return "Country: " + country + ", country code: " + countryCode + ", food: " + food + ", feed: " + feed + ", cultivation: " + cultivation;
 			}
 		}		
 	}
@@ -52,8 +59,8 @@ class GMODataParser {
 			List<String> allMatches = new ArrayList<String>();			
 			while (matcher.find()) {
    				allMatches.add(matcher.group(1));
- 			}			
-			
+ 			}
+
 			List<EventRow> eventRowList = new ArrayList<EventRow>();
 			
 			int counter = 1;
@@ -62,6 +69,7 @@ class GMODataParser {
 				String dataStringDetail = getStringDataForUrl(urlDetail);
 				EventRow eventRow = gmoDataParser.new EventRow();
 				eventRow.id = Integer.parseInt(id);
+                eventRow.tradeName = gmoDataParser.getTradeName(dataStringDetail);
 				eventRow.crop = gmoDataParser.getCrop(dataStringDetail);
 				eventRow.developer = gmoDataParser.getDeveloper(dataStringDetail);
 				eventRow.gmTrait = gmoDataParser.getGMTrait(dataStringDetail);
@@ -75,15 +83,15 @@ class GMODataParser {
 			
 			gmoDataParser.writeDataToTSV(eventRowList, "data.tsv");
 										
-		} catch(Exception e) {
-			e.printStackTrace();
+		} catch(Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	
 	public static String getStringDataForUrl(URL url) {
 		String completedString = null;
 		try {
-			BufferedReader reader = new BufferedReader(new 		InputStreamReader(url.openStream(), "UTF-8"));		
+			BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
 
 			StringBuilder builder = new StringBuilder();
 
@@ -92,8 +100,8 @@ class GMODataParser {
 			}
 			completedString = builder.toString();
 			
-		} catch(Exception e) {
-			e.printStackTrace();
+		} catch(Exception ex) {
+			ex.printStackTrace();
 		}
 		return completedString;
 	}
@@ -117,8 +125,8 @@ class GMODataParser {
 			}
 			out.flush();
 			out.close();	
-		} catch (Exception e){
-			e.printStackTrace();
+		} catch (Exception ex){
+			ex.printStackTrace();
 		}
 	}
 	
@@ -139,12 +147,20 @@ class GMODataParser {
 				}				
 			}			
 			bw.close();				
-		} catch (Exception e){
-			e.printStackTrace();
+		} catch (Exception ex){
+			ex.printStackTrace();
 		}
 	}
 
-	// TODO: public String getName(String data);
+    public String getTradeName(String data){
+        Pattern pattern = Pattern.compile("Trade Name:([a-zA-Z0-9\\,\\.\\-\\+\\s\"\\u2122&trade;\\u00AE/]*)</strong>");
+        Matcher matcher = pattern.matcher(data);
+        List<String> allMatches = new ArrayList<String>();
+        while (matcher.find()) {
+            allMatches.add(matcher.group(1));
+        }
+        return allMatches.get(0).trim();
+    }
 	
 	public String getCrop(String data){		
 		Pattern pattern = Pattern.compile("<p>Crop: <a href=\"/gmapprovaldatabase/crop/default\\.asp\\?CropID=\\d+\"><em>[a-zA-Z\\s\\.]+</em> - ([a-zA-Z\\s,\\.\\(\\)]+)</a></p>");
@@ -179,7 +195,7 @@ class GMODataParser {
 			allMatches.add(matcher.group(1));
 		}
 		if(allMatches.size() == 0){
-			result.add("Not available");  // todo: find Commercial Trait
+			result.add("Not available");
 			return result;
 		}
 		outer = allMatches.get(0);
@@ -212,8 +228,8 @@ class GMODataParser {
 					result.add(tds.item(1).getTextContent().trim());
 				}				
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 		return result;		
 	}
@@ -238,6 +254,12 @@ class GMODataParser {
 				// country
 				Node a = ((Element) tds.item(0)).getElementsByTagName("a").item(0);
 				approval.country = a.getTextContent().trim();
+				if(approval.country.equals("European Union")){
+					approval.countryCode = "EU";
+				} else {
+					approval.countryCode = getCountryCode(approval.country);
+				}
+
 				// food
 				Node spanFood = ((Element) tds.item(1)).getElementsByTagName("span").item(0);
 				String spanFoodId = spanFood.getAttributes().getNamedItem("id").getNodeValue();
@@ -252,8 +274,8 @@ class GMODataParser {
 				approval.cultivation = getYearById(spanCultivationId, data);
 				eventRow.approvals.add(approval);
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
 	}
 	
@@ -291,4 +313,17 @@ class GMODataParser {
 		}			
 		return allMatches.get(0);
 	}
+
+	private String getCountryCode(String country) {
+        String code = null;
+        try {
+            URL url = new URL("https://restcountries.eu/rest/v1/name/" + country + "?fullText=true");
+            String dataString = getStringDataForUrl(url);
+            JSONArray jsonArray = (JSONArray) new JSONParser().parse(dataString);
+			code = ((JSONObject) jsonArray.get(0)).get("alpha3Code").toString();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return code;
+    }
 }
