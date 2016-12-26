@@ -36,6 +36,7 @@ function draw(geo_data) {
     // helpers
 
     function getCentroid(country){
+        console.log(country);
         var selector = '[name~='+country.trim()+']';
         var centroid = path.centroid(d3.select(selector).datum());
         return centroid;
@@ -61,34 +62,28 @@ function draw(geo_data) {
 
         var dataNested = d3.nest()
             .key(function(d) { return calculateYear(d); })
-            .key(function(d) { return d.country; })  // TODO: change to countryCode
+            .key(function(d) { return d.countryCode; })
             .key(function(d) { return d.crop; })
             .entries(data);
 
-        var dataFiltered = dataNested.filter(function(value){return value.key == "1993"});
+        var dataFiltered = dataNested.filter(function(value){return value.key == "1996"});
 
         console.log(dataFiltered[0].values);
-        // year --> country --> crop --> tradeName --> leaves(name, geneSource, gmTrait etc.)
+
+        // year --> countryCode --> crop --> tradeName --> leaves(name, geneSource, gmTrait etc.)
+        // TODO: EU
 
         // functions:
         // countTradeNames(crop, country, year),
         // countCrops(country, year),
 
-        var dataExample = [
-            {key : "c", value : "30", country : "Afghanistan"},
-            {key : "a", value : "10", country : "Angola"},
-            {key : "b", value : "20", country : "Mexico"},
-            {key : "d", value : "40", country: "Taiwan"}
-        ];
-
         svg.append("g")
             .attr("class", "data")
             .selectAll("circle")
-          //  .data(dataExample)
             .data(dataFiltered[0].values)
             .enter()
             .append("circle")
-            .attr('cx', function(d) { return getCentroid(d.key)[0]; })
+            .attr('cx', function(d) { return getCentroid(d.key)[0]; })  // TODO: centroids are not in the center
             .attr('cy', function(d) { return getCentroid(d.key)[1];})
             .style('fill', '#8aa26e')
             .style('stroke', '#244e04')
