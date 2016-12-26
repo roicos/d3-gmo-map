@@ -2,6 +2,7 @@ import java.net.URL;
 import java.lang.Exception;
 import java.io.*;
 import java.lang.StringBuilder;
+import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern; 
 import java.util.List;
@@ -16,7 +17,7 @@ import org.w3c.dom.*;
 
 class GMODataParser {
 
-	private Object kjkj;
+	private HashMap<String, String> countryCodes;
 
 	class EventRow{
 		
@@ -80,6 +81,8 @@ class GMODataParser {
 				System.out.println(eventRow);
 				counter++;
 			}
+
+			System.out.println(gmoDataParser.countryCodes);
 			
 			gmoDataParser.writeDataToTSV(eventRowList, "data.tsv");
 										
@@ -315,15 +318,24 @@ class GMODataParser {
 	}
 
 	private String getCountryCode(String country) {
-        String code = null;
-        try {
-            URL url = new URL("https://restcountries.eu/rest/v1/name/" + country + "?fullText=true");
-            String dataString = getStringDataForUrl(url);
-            JSONArray jsonArray = (JSONArray) new JSONParser().parse(dataString);
-			code = ((JSONObject) jsonArray.get(0)).get("alpha3Code").toString();
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-        return code;
+		String result = null;
+		if (countryCodes == null){
+			countryCodes = new HashMap<String, String>();
+		}
+
+		if(countryCodes.containsKey(country)){
+			result = countryCodes.get(country);
+		} else {
+			try {
+				URL url = new URL("https://restcountries.eu/rest/v1/name/" + country + "?fullText=true");
+				String dataString = getStringDataForUrl(url);
+				JSONArray jsonArray = (JSONArray) new JSONParser().parse(dataString);
+				result = ((JSONObject) jsonArray.get(0)).get("alpha3Code").toString();
+				countryCodes.put(country, result);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+		}
+        return result;
     }
 }
