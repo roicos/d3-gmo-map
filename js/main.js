@@ -21,8 +21,12 @@ function draw(geo_data) {
     var path = d3.geo.path().projection(projection);
 
     var map = svg.append('g')
-        .attr('class', 'map')
-        .selectAll('path')
+        .attr('class', 'map');
+
+    var EU = map.append('g')
+            .attr('name', 'EU');
+
+    map.selectAll('path')
         .data(geo_data.features)
         .enter()
         .append('path')
@@ -32,12 +36,23 @@ function draw(geo_data) {
         .style('stroke', '#3c4b52')
         .style('stroke-width', 0.5);
 
+    var EUCountries = ['AUT', 'BEL', 'BGR', 'HRV', 'CYP', 'CZE', 'DNK',
+                        'EST', 'FIN', 'FRA', 'DEU', 'GRC', 'HUN', 'IRL',
+                        'ITA', 'LVA', 'LTU', 'LUX', 'NLD', 'POL',
+                        'PRT', 'ROU', 'SVK', 'SVN', 'ESP', 'SWE', 'GBR', 'NOR'];
+
+    for (var i = 0; i < EUCountries.length; i++) {
+        EU.append(function(d) {
+            var selector = '[name = '+EUCountries[i]+ ' ]';
+            var paths = map.select(selector).remove();
+            return paths[0][0];
+        });
+    }
 
     // helpers
 
-    function getCentroid(country){
-        console.log(country);
-        var selector = '[name~='+country.trim()+']';
+    function getCentroid(countryCode){
+        var selector = '[name~='+countryCode.trim()+']';
         var centroid = path.centroid(d3.select(selector).datum());
         return centroid;
     }
@@ -66,12 +81,11 @@ function draw(geo_data) {
             .key(function(d) { return d.crop; })
             .entries(data);
 
-        var dataFiltered = dataNested.filter(function(value){return value.key == "1996"});
+        var dataFiltered = dataNested.filter(function(value){return value.key == "1997"});
 
         console.log(dataFiltered[0].values);
 
         // year --> countryCode --> crop --> tradeName --> leaves(name, geneSource, gmTrait etc.)
-        // TODO: EU
 
         // functions:
         // countTradeNames(crop, country, year),
@@ -83,13 +97,13 @@ function draw(geo_data) {
             .data(dataFiltered[0].values)
             .enter()
             .append("circle")
-            .attr('cx', function(d) { return getCentroid(d.key)[0]; })  // TODO: centroids are not in the center
+            .attr('cx', function(d) { return getCentroid(d.key)[0]; })  // TODO: EU must be in the center of DEU, centroids are not in the center
             .attr('cy', function(d) { return getCentroid(d.key)[1];})
             .style('fill', '#8aa26e')
             .style('stroke', '#244e04')
             .attr("r", 0)
             .transition()
-            .attr('r', function(d) { return d.values.length; });
+            .attr('r', function(d) { return d.values.length * 3; });
 
 
         // http://stackoverflow.com/questions/25881186/d3-fill-shape-with-image-using-pattern  - how to implement icons
