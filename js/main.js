@@ -56,23 +56,54 @@ function draw(geo_data) {
         .attr("class", "tooltip")
         .style("opacity", 0);
 
+    function showTooltip(d){
+        tooltip.transition()
+            .duration(200)
+            .style("opacity", .9);
+            tooltip	.html(d.key + ": " + calculateTradeNames(d))
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+    }
+
+    function hideTooltip(d){
+        tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+    }
+
     // helpers
 
     function getCentroid(countryCode){
         var selector = '[name='+(countryCode == "EU" ? "DEU" : (countryCode == "SGP" ? "MYS" : countryCode.trim()))+']';
         var centroid = path.centroid(d3.select(selector).datum());
-        if(countryCode == "SGP"){
-            centroid[0] -=15;
-            centroid[1] +=3;
+        switch(countryCode){
+            case "SGP":
+                centroid[0] -=15;
+                centroid[1] +=3;
+            break;
+            case "USA":
+                centroid[0] +=40;
+                centroid[1] +=35;
+            break;
+            case "CAN":
+                centroid[0] -=40;
+                centroid[1] +=50;
+            break;
+            case "KOR": //ATF
+                centroid[0] +=40;
+                centroid[1] -=150;
+            break;
+            case "NZL": // NCL
+                centroid[0] +=10;
+                centroid[1] +=50;
+            break;
+            case "NOR":
+                centroid[0] -=5;
+                centroid[1] +=50;
+            break;
         }
-        if(countryCode == "USA"){
-            centroid[0] +=40;
-            centroid[1] +=35;
-        }
-        if(countryCode == "CAN"){
-            centroid[0] -=40;
-            centroid[1] +=50;
-        }
+
+        // South Korea, New Zeland, Norway
         return centroid;
     }
 
@@ -90,99 +121,92 @@ function draw(geo_data) {
         return d3.min(years);
     }
 
+    function calculateCrops(d){
+        return d.values.length;
+    }
+
+    function calculateTradeNames(d){
+        var counter = 0;
+        for (var i=0; i<d.values.length; i++){
+            counter += d.values[i].values.length;
+        }
+        return counter;
+    }
+
+    function keyFunc(d){
+        return d.key + "-" + calculateTradeNames(d);
+    }
+
+    function calculateRadius(cropsCount){
+        return Math.sqrt(cropsCount) * 2;
+    }
+
     // data
 
     d3.tsv(pathToData, function(error, data) {
 
-        var dataNested = d3.nest()
-            .key(function(d) { return calculateYear(d); })
-            .key(function(d) { return d.countryCode; })
-            .key(function(d) { return d.crop; })
-            .entries(data);
+        var dataNested;
+        var dataFiltered;
+        var circles;
 
-        var dataFiltered = dataNested.filter(function(value){return value.key == "2015"});
 
-       // console.log(dataFiltered);
+        function update(year) {
 
-        function key_func(d) {
-            return d['key'];
-        }
+            console.log(year);
 
-        function showTooltip(d){
-            //console.log(d.values[0].values[0].country);
-            tooltip.transition()
-                .duration(200)
-                .style("opacity", .9);
-                tooltip	.html(d.values[0].values[0].country + ": " + d.values.length)
-                .style("left", (d3.event.pageX) + "px")
-                .style("top", (d3.event.pageY - 28) + "px");
-        }
-
-        function hideTooltip(d){
-            tooltip.transition()
-                .duration(500)
-                .style("opacity", 0);
-        }
-
-        svg.append("g")
-            .attr("class", "data")
-            .selectAll("circle")
-           // .data(dataFiltered, key_func)
-            .data(dataFiltered[0].values)
-            .enter()
-            .append("circle")
-            .attr('cx', function(d) { return getCentroid(d.key)[0]; })
-            .attr('cy', function(d) { return getCentroid(d.key)[1];})
-            .style('fill', '#8aa26e')
-            .style('stroke', '#244e04')
-            .on("mouseover", showTooltip)
-            .on("mouseout", hideTooltip)
-            .attr("r", 0)
-            .transition()
-            .attr('r', function(d) { return d.values.length * 3; });
-
-// TODO: animation: summ crops for all years
-
-            function update(year) {
-                dataFiltered = dataNested.filter(function(d) {
-                  return d['key'] == year;
+            dataFiltered = data.filter(function(d) {
+                  return calculateYear(d) <= year;
             });
 
-            var circles = svg.selectAll('circle')
-                                .data(dataFiltered[0].values);
+            dataNested = d3.nest()
+                         .key(function(d) { return d.countryCode; })
+                         .key(function(d) { return d.crop; })
+                         .key(function(d) { return d.tradeName; })
+                         .entries(dataFiltered);
+
+            //console.log(dataNested);
+
+            keyFunc(dataNested[0]);
+
+            // todo: use data(data, calculateTradeNames+country) to compare tradeNames+country, not just countries
+
+            circles = svg.selectAll("circle")
+                      .data(dataNested, keyFunc);
 
             circles.exit().remove();
-            circles.enter()
+
+            circles.enter()  // страны, которые добавились
                     .append("circle")
                     .transition()
                     .duration(500)
-                    .attr('cx', function(d) { console.log(d); return getCentroid(d.key)[0]; })
+                    .attr('cx', function(d) { return getCentroid(d.key)[0]; })
                     .attr('cy', function(d) { return getCentroid(d.key)[1];})
-                    .attr('r', function(d) { return d.values.length * 3; });
+                    .style('fill', '#8aa26e')
+                    .style('stroke', '#244e04')
+                    .attr("r", 0)
+                    .transition()
+                    .attr('r', function(d) { return calculateRadius(d.values.length); });
+
+            circles.on("mouseover", showTooltip)
+                   .on("mouseout", hideTooltip);
+        }
+
+        var years = [];
+
+        for(var i = 1992; i < 2016; i ++) {
+            years.push(i);
+        }
+
+        var year_idx = 0;
+
+        var year_interval = setInterval(function() {
+            update(years[year_idx]);
+            year_idx++;
+
+            if(year_idx >= years.length) {
+                clearInterval(year_interval);
             }
-
-            var years = [];
-
-            for(var i = 1992; i < 2017; i ++) {
-                years.push(i);
-            }
-
-            var year_idx = 0;
-
-            var year_interval = setInterval(function() {
-                update(years[year_idx]);
-                year_idx++;
-
-                if(year_idx >= years.length) {
-                    clearInterval(year_interval);
-                }
-            }, 1000);
-
-        // year --> countryCode --> crop --> tradeName --> leaves(name, geneSource, gmTrait etc.)
-
-                // functions:
-                // countTradeNames(crop, country, year),
-                // countCrops(country, year),
+        }, 1000);
 
         // http://stackoverflow.com/questions/25881186/d3-fill-shape-with-image-using-pattern  - how to implement icons
         // http://stackoverflow.com/questions/25524906/how-to-make-an-image-round-in-d3-js - the same

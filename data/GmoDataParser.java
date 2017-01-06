@@ -141,11 +141,11 @@ class GMODataParser {
 				file.createNewFile();
 			}				
 			BufferedWriter bw = new BufferedWriter(new FileWriter(file));
-			String[] headers = {"id", "crop", "geneSource", "gmTrait", "developer", "country", "countryCode", "food", "feed", "cultivation"};
+			String[] headers = {"id", "crop", "tradeName", "geneSource", "gmTrait", "developer", "country", "countryCode", "food", "feed", "cultivation"};
 			bw.write(String.join("\t", headers)+"\n");
 			for(EventRow er : eventRowList){
 				for(EventRow.Approval a : er.approvals){
-					String [] rowData = {String.valueOf(er.id), er.crop, String.join(",", er.geneSource), String.join(",", er.gmTrait), er.developer, a.country, a.countryCode, String.valueOf(a.food), String.valueOf(a.feed), String.valueOf(a.cultivation)};
+					String [] rowData = {String.valueOf(er.id), er.crop, er.tradeName, String.join(",", er.geneSource), String.join(",", er.gmTrait), er.developer, a.country, a.countryCode, String.valueOf(a.food), String.valueOf(a.feed), String.valueOf(a.cultivation)};
 					bw.write(String.join("\t", rowData)+"\n");
 				}				
 			}			
