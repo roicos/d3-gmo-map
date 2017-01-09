@@ -5,9 +5,9 @@ function draw(geo_data) {
 
     // map
 
-    var margin = 75,
-    width = 1400 - margin,
-    height = 600 - margin;
+    var margin = 75;
+    var width = 1400 - margin;
+    var height = 600 - margin;
 
     var svg = d3.select("body")
         .append("svg")
@@ -47,28 +47,6 @@ function draw(geo_data) {
             var paths = map.select(selector).remove();
             return paths[0][0];
         });
-    }
-
-
-    // Tooltip
-
-    var tooltip = d3.select("body").append("div")
-        .attr("class", "tooltip")
-        .style("opacity", 0);
-
-    function showTooltip(d){
-        tooltip.transition()
-            .duration(200)
-            .style("opacity", .9);
-            tooltip	.html(d.key + ": " + calculateTradeNames(d))
-            .style("left", (d3.event.pageX) + "px")
-            .style("top", (d3.event.pageY - 28) + "px");
-    }
-
-    function hideTooltip(d){
-        tooltip.transition()
-            .duration(500)
-            .style("opacity", 0);
     }
 
     // helpers
@@ -121,8 +99,16 @@ function draw(geo_data) {
         return d3.min(years);
     }
 
+    function getCountryName(d){
+        return d.values[0].values[0].values[0].country;
+    }
+
     function calculateCrops(d){
         return d.values.length;
+    }
+
+    function getCrops(d){
+        return d.values;
     }
 
     function calculateTradeNames(d){
@@ -133,12 +119,80 @@ function draw(geo_data) {
         return counter;
     }
 
+    function getTradeNamesListHTML(d){
+        var crops = getCrops(d);
+        var html = "<ul>";
+        for (var i = 0; i<crops.length; i++){
+            html += "<li>" + crops[i].key + ": " + crops[i].values.length;
+            html += "</li>";
+        }
+        html += "</ul>";
+        return html;
+    }
+
     function keyFunc(d){
         return d.key + "-" + calculateTradeNames(d);
     }
 
     function calculateRadius(cropsCount){
         return Math.sqrt(cropsCount) * 2;
+    }
+
+    // Tooltip
+
+    var tooltip = d3.select("body").append("div")
+                    .attr("class", "tooltip")
+                    .style("opacity", 0);
+
+
+    function showTooltip(d){
+        d3.select(this)
+          .style('stroke', '#b91343')
+          .style('stroke-width', '3');
+        tooltip.transition()
+            .duration(200)
+            .style("opacity", .9);
+            tooltip.html(getCountryName(d) + ": " + calculateTradeNames(d) + " sorts")
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+    }
+
+    function hideTooltip(d){
+        d3.select(this)
+          .style('stroke', '#244e04')
+          .style('stroke-width', '1');
+        tooltip.transition()
+            .duration(500)
+            .style("opacity", 0);
+    }
+
+    // Info
+
+    var info = d3.select("body").append("div")
+                     .attr("class", "info")
+                     .style("opacity", 0);
+
+    function calculateInfoPosition(coords){
+        // TODO: calculate
+        // width/2, height/2
+    }
+
+    function showInfo(d){
+            hideTooltip(d);
+            // The way to get circle coords
+            // console.log(d3.select(this).attr("cx") + d3.select(this).attr("cy"));
+           info.transition()
+            .duration(200)
+            .style("opacity", .9);
+            info.html("<h4>" + getCountryName(d) + ": " + calculateCrops(d) + " crops</h4>" + getTradeNamesListHTML(d))
+            .style("left", (d3.event.pageX) + "px")
+            .style("top", (d3.event.pageY - 28) + "px");
+    }
+
+    function hideInfo(d){
+        info.transition()
+            .duration(500)
+            .style("opacity", 0);
     }
 
     // data
@@ -164,18 +218,12 @@ function draw(geo_data) {
                          .key(function(d) { return d.tradeName; })
                          .entries(dataFiltered);
 
-            //console.log(dataNested);
-
-            keyFunc(dataNested[0]);
-
-            // todo: use data(data, calculateTradeNames+country) to compare tradeNames+country, not just countries
-
             circles = svg.selectAll("circle")
                       .data(dataNested, keyFunc);
 
             circles.exit().remove();
 
-            circles.enter()  // страны, которые добавились
+            circles.enter()
                     .append("circle")
                     .transition()
                     .duration(500)
@@ -185,15 +233,16 @@ function draw(geo_data) {
                     .style('stroke', '#244e04')
                     .attr("r", 0)
                     .transition()
-                    .attr('r', function(d) { return calculateRadius(d.values.length); });
+                    .attr('r', function(d) {return calculateRadius(calculateTradeNames(d)); });
 
             circles.on("mouseover", showTooltip)
-                   .on("mouseout", hideTooltip);
-        }
+                   .on("mouseout", hideTooltip)
+                   .on("click", showInfo);
+            }
 
         var years = [];
 
-        for(var i = 1992; i < 2016; i ++) {
+        for(var i = 1992; i < 1997; i ++) {
             years.push(i);
         }
 
@@ -207,8 +256,5 @@ function draw(geo_data) {
                 clearInterval(year_interval);
             }
         }, 1000);
-
-        // http://stackoverflow.com/questions/25881186/d3-fill-shape-with-image-using-pattern  - how to implement icons
-        // http://stackoverflow.com/questions/25524906/how-to-make-an-image-round-in-d3-js - the same
     });
 };
