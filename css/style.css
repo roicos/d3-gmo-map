@@ -1,24 +1,44 @@
 div.tooltip {
     position: absolute;
     text-align: center;
-    width: 60px;
-    height: 28px;
+    height: 14px;
     padding: 2px;
     font: 12px sans-serif;
     background: lightsteelblue;
-    border: 0px;
+    border: 1px solid #8aa26e;
     border-radius: 8px;
     pointer-events: none;
+    color: #3c4b52;
 }
 
 div.info {
     position: absolute;
     text-align: center;
-    width: 200px;
+    width: 300px;
     padding: 2px;
     font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 0px;
+    background: #f6f8e0;
+    border: 1px solid #8aa26e;
     border-radius: 8px;
     pointer-events: none;
+    color: #3c4b52;
+}
+
+div.close{
+    width: 16px;
+    height: 16px;
+    background-image: url("close.png");
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    pointer-events: auto;
+}
+
+div.info h2{
+    color: #b91343;
+}
+
+div.info ul  {
+    list-style: none;
+    text-align: left;
 }

@@ -184,9 +184,13 @@ function draw(geo_data) {
            info.transition()
             .duration(200)
             .style("opacity", .9);
-            info.html("<h4>" + getCountryName(d) + ": " + calculateCrops(d) + " crops</h4>" + getTradeNamesListHTML(d))
+            info.html("<div class='close'></div><h4>" + getCountryName(d) + ": " + calculateCrops(d) + " crops</h4>" + getTradeNamesListHTML(d))
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
+
+            var close = d3.select(".close");
+
+            close.on("click", hideInfo);
     }
 
     function hideInfo(d){
