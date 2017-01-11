@@ -121,10 +121,18 @@ function draw(geo_data) {
 
     function getTradeNamesListHTML(d){
         var crops = getCrops(d);
-        var html = "<ul>";
+        var html = "<ul class='crops'>";
         for (var i = 0; i<crops.length; i++){
-            html += "<li>" + crops[i].key + ": " + crops[i].values.length;
-            html += "</li>";
+            var tradeNames = crops[i].values;
+            html += "<li><h5>" + crops[i].key + ": " + tradeNames.length + " sorts</h5>";
+            html += "<ol class='trade-names'>"
+            for(var j=0; j<tradeNames.length; j++){
+                html += "<li><p>Trade name: " + tradeNames[j].key + "</p>";
+                html += "<p>Developer: " + tradeNames[j].values[0].developer +"</p>";
+                html += "<p>Modifications: " + tradeNames[j].values[0].gmTrait + "</p>";
+                html += "<p>Gene sources: " + tradeNames[j].values[0].geneSource + "</p></li>";
+            }
+            html += "</ol></li>";
         }
         html += "</ul>";
         return html;
@@ -178,18 +186,35 @@ function draw(geo_data) {
     }
 
     function showInfo(d){
-            hideTooltip(d);
+             hideTooltip(d);
             // The way to get circle coords
             // console.log(d3.select(this).attr("cx") + d3.select(this).attr("cy"));
-           info.transition()
+            info.transition()
             .duration(200)
             .style("opacity", .9);
+
             info.html("<div class='close'></div><h4>" + getCountryName(d) + ": " + calculateCrops(d) + " crops</h4>" + getTradeNamesListHTML(d))
             .style("left", (d3.event.pageX) + "px")
             .style("top", (d3.event.pageY - 28) + "px");
 
-            var close = d3.select(".close");
+            info.selectAll(".trade-names")
+                .style("display", "none")
+                .style("height", 0);
+            info.selectAll("h5").on("click", function(){
+                d3.selectAll(".trade-names")
+                .style("display", "none")
+               // .style("height", 0);
+                d3.select(this.nextSibling)
+                .style("display",  "block")
+               // .transition()  // doesn't work
+               // .duration(1000)
+               // .style("height", "auto");
+                //console.log(this.nextSibling);
+                //console.log(this.nextElementSibling)
+                   // .style("display", "block");
+            });
 
+            var close = d3.select(".close");
             close.on("click", hideInfo);
     }
 

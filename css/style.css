@@ -14,7 +14,7 @@ div.tooltip {
 div.info {
     position: absolute;
     text-align: center;
-    width: 300px;
+    width: 500px;
     padding: 2px;
     font: 12px sans-serif;
     background: #f6f8e0;
@@ -41,4 +41,9 @@ div.info h2{
 div.info ul  {
     list-style: none;
     text-align: left;
+}
+
+div.info h5 {
+    cursor: pointer;
+    pointer-events: auto;
 }
