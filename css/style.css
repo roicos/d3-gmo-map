@@ -13,8 +13,10 @@ div.tooltip {
 
 div.info {
     position: absolute;
+    top: 0px;
+    left: 100px;
     text-align: center;
-    width: 500px;
+    width: 1200px;
     padding: 2px;
     font: 12px sans-serif;
     background: #f6f8e0;

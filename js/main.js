@@ -187,15 +187,13 @@ function draw(geo_data) {
 
     function showInfo(d){
              hideTooltip(d);
-            // The way to get circle coords
-            // console.log(d3.select(this).attr("cx") + d3.select(this).attr("cy"));
             info.transition()
             .duration(200)
             .style("opacity", .9);
 
-            info.html("<div class='close'></div><h4>" + getCountryName(d) + ": " + calculateCrops(d) + " crops</h4>" + getTradeNamesListHTML(d))
-            .style("left", (d3.event.pageX) + "px")
-            .style("top", (d3.event.pageY - 28) + "px");
+            info.html("<div class='close'></div><h4>"
+            + getCountryName(d) + ": " + calculateCrops(d)
+            + " crops</h4>" + getTradeNamesListHTML(d));
 
             info.selectAll(".trade-names")
                 .style("display", "none")
@@ -203,15 +201,10 @@ function draw(geo_data) {
             info.selectAll("h5").on("click", function(){
                 d3.selectAll(".trade-names")
                 .style("display", "none")
-               // .style("height", 0);
+                .style("height", 0);
                 d3.select(this.nextSibling)
                 .style("display",  "block")
-               // .transition()  // doesn't work
-               // .duration(1000)
-               // .style("height", "auto");
-                //console.log(this.nextSibling);
-                //console.log(this.nextElementSibling)
-                   // .style("display", "block");
+                .style("height", "auto");
             });
 
             var close = d3.select(".close");
@@ -271,7 +264,7 @@ function draw(geo_data) {
 
         var years = [];
 
-        for(var i = 1992; i < 1997; i ++) {
+        for(var i = 1992; i < 2016; i ++) {
             years.push(i);
         }
 
