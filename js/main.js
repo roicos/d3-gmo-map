@@ -4,6 +4,7 @@ function draw(geo_data) {
     var pathToData = "./data/data.tsv";
 
     // map
+    // TODO: function drawMap
 
     var margin = 75;
     var width = 1400 - margin;
@@ -85,6 +86,23 @@ function draw(geo_data) {
         return centroid;
     }
 
+    function getYearsList(){
+        var years = [];
+        for(var i = 1992; i <= 2016; i ++) {
+                    years.push(i);
+        }
+        return years;
+    }
+
+    function getCropsList(data){
+        var nested = d3.nest()
+                       .key(function(d) { return d.crop; })
+                       .sortKeys(d3.ascending)
+                       .map(data, d3.map);
+
+        return d3.keys(nested["_"]);
+    }
+
     function calculateYear(d){
         var years = [];
         if(d.food > 0){
@@ -127,10 +145,11 @@ function draw(geo_data) {
             html += "<li><h5>" + crops[i].key + ": " + tradeNames.length + " sorts</h5>";
             html += "<ol class='trade-names'>"
             for(var j=0; j<tradeNames.length; j++){
-                html += "<li><p>Trade name: " + tradeNames[j].key + "</p>";
-                html += "<p>Developer: " + tradeNames[j].values[0].developer +"</p>";
-                html += "<p>Modifications: " + tradeNames[j].values[0].gmTrait + "</p>";
-                html += "<p>Gene sources: " + tradeNames[j].values[0].geneSource + "</p></li>";
+                html += "<li><p><b>Trade name:</b> " + tradeNames[j].key + "</p>";
+                html += "<p><b>Developer:</b> " + tradeNames[j].values[0].developer +"</p>";
+                html += "<p><b>Modifications:</b> " + tradeNames[j].values[0].gmTrait + "</p>";
+                html += "<p><b>Gene sources:</b> " + tradeNames[j].values[0].geneSource + "</p>";
+                html += "<a herf = 'http://www.isaaa.org/gmapprovaldatabase/event/default.asp?EventID='" + tradeNames[j].values[0].id + " class='more'>read more</a></li>";
             }
             html += "</ol></li>";
         }
@@ -180,11 +199,6 @@ function draw(geo_data) {
                      .attr("class", "info")
                      .style("opacity", 0);
 
-    function calculateInfoPosition(coords){
-        // TODO: calculate
-        // width/2, height/2
-    }
-
     function showInfo(d){
              hideTooltip(d);
             info.transition()
@@ -217,6 +231,38 @@ function draw(geo_data) {
             .style("opacity", 0);
     }
 
+    // controls
+
+    function addCropControl(crops){
+        var cropControl = d3.select("body").append("ul")
+          .attr("class", "crop-control")
+          .style("opacity", 0);
+
+        for(var i = 0; i < crops.length; i++){
+            cropControl.append("li")
+                       .html(crops[i]);
+        }
+
+        cropControl.transition()
+                   .duration(200)
+                   .style("opacity", .9);
+    }
+
+    function addYearControl(years){
+        var cropControl = d3.select("body").append("ul")
+          .attr("class", "crop-control")
+          .style("opacity", 0);
+
+        for(var i = 0; i < years.length; i++){
+            cropControl.append("li")
+                       .html(years[i]);
+        }
+
+        cropControl.transition()
+                   .duration(200)
+                   .style("opacity", .9);
+    }
+
     // data
 
     d3.tsv(pathToData, function(error, data) {
@@ -224,14 +270,21 @@ function draw(geo_data) {
         var dataNested;
         var dataFiltered;
         var circles;
+        var cropsList = getCropsList(data);
+        var years = getYearsList();
 
+        function addControls() {
+            addCropControl(cropsList)
+            addYearControl(years);
+        }
 
-        function update(year) {
+        function update(year, crop) {
 
             console.log(year);
+            console.log(crop);
 
             dataFiltered = data.filter(function(d) {
-                  return calculateYear(d) <= year;
+                  return calculateYear(d) <= year && (crop != null ? d.crop == crop : true);
             });
 
             dataNested = d3.nest()
@@ -253,7 +306,7 @@ function draw(geo_data) {
                     .attr('cy', function(d) { return getCentroid(d.key)[1];})
                     .style('fill', '#8aa26e')
                     .style('stroke', '#244e04')
-                    .attr("r", 0)
+                    .attr("r", 0)  // TODO: remember old data and change radius from old to new
                     .transition()
                     .attr('r', function(d) {return calculateRadius(calculateTradeNames(d)); });
 
@@ -262,20 +315,18 @@ function draw(geo_data) {
                    .on("click", showInfo);
             }
 
-        var years = [];
 
-        for(var i = 1992; i < 2016; i ++) {
-            years.push(i);
-        }
-
+        // animation
+        // TODO: function startAnimation
         var year_idx = 0;
 
         var year_interval = setInterval(function() {
-            update(years[year_idx]);
+            update(years[year_idx], null);
             year_idx++;
 
             if(year_idx >= years.length) {
                 clearInterval(year_interval);
+                addControls();
             }
         }, 1000);
     });

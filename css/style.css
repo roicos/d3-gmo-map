@@ -49,3 +49,8 @@ div.info h5 {
     cursor: pointer;
     pointer-events: auto;
 }
+
+a.more {
+     cursor: pointer;
+     pointer-events: auto;
+}
