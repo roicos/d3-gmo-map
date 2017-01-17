@@ -2,6 +2,8 @@ function draw(geo_data) {
     "use strict";
 
     var pathToData = "./data/data.tsv";
+    var yearStart = 1992;
+    var yearEnd = 2016;
 
     // map
     // TODO: function drawMap
@@ -88,7 +90,7 @@ function draw(geo_data) {
 
     function getYearsList(){
         var years = [];
-        for(var i = 1992; i <= 2016; i ++) {
+        for(var i = yearStart; i <= yearEnd; i ++) {
                     years.push(i);
         }
         return years;
@@ -246,21 +248,25 @@ function draw(geo_data) {
         cropControl.transition()
                    .duration(200)
                    .style("opacity", .9);
+
+        return cropControl;
     }
 
     function addYearControl(years){
-        var cropControl = d3.select("body").append("ul")
-          .attr("class", "crop-control")
+        var yearControl = d3.select("body").append("ul")
+          .attr("class", "year-control")
           .style("opacity", 0);
 
         for(var i = 0; i < years.length; i++){
-            cropControl.append("li")
+            yearControl.append("li")
                        .html(years[i]);
         }
 
-        cropControl.transition()
+        yearControl.transition()
                    .duration(200)
                    .style("opacity", .9);
+
+        return yearControl;
     }
 
     // data
@@ -270,13 +276,12 @@ function draw(geo_data) {
         var dataNested;
         var dataFiltered;
         var circles;
+
         var cropsList = getCropsList(data);
         var years = getYearsList();
 
-        function addControls() {
-            addCropControl(cropsList)
-            addYearControl(years);
-        }
+        var cropControl;
+        var yearControl;
 
         function update(year, crop) {
 
@@ -313,6 +318,24 @@ function draw(geo_data) {
             circles.on("mouseover", showTooltip)
                    .on("mouseout", hideTooltip)
                    .on("click", showInfo);
+            }
+
+            function addControls() {
+
+                var year = yearEnd, crop = null;
+
+                cropControl = addCropControl(cropsList);
+                cropControl.selectAll("li")
+                           .on("click", function(){
+                                crop = d3.select(this).html();
+                                update(year, crop);
+                           });
+
+                yearControl = addYearControl(years);
+                yearControl.selectAll("li")
+                           .on("click", function(){
+                                year = d3.select(this).html();
+                                update(year, crop)});
             }
 
 

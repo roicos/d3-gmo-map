@@ -54,3 +54,11 @@ a.more {
      cursor: pointer;
      pointer-events: auto;
 }
+
+.crop-control>li{
+    cursor: pointer;
+}
+
+.year-control>li{
+    cursor: pointer;
+}
