@@ -55,7 +55,11 @@ a.more {
      pointer-events: auto;
 }
 
-.crop-control>li{
+.crop-control{
+    left: 600px;
+}
+
+.crop-control li{
     cursor: pointer;
 }
 

@@ -3,7 +3,7 @@ function draw(geo_data) {
 
     var pathToData = "./data/data.tsv";
     var yearStart = 1992;
-    var yearEnd = 2016;
+    var yearEnd = 1995;
 
     // map
     // TODO: function drawMap
@@ -236,12 +236,23 @@ function draw(geo_data) {
     // controls
 
     function addCropControl(crops){
-        var cropControl = d3.select("body").append("ul")
-          .attr("class", "crop-control")
-          .style("opacity", 0);
+        var cropControl = d3.select("body")
+                                   .append("div")
+                                   .attr("class", "dropup crop-control")
+                                   .style("opacity", 0);
+
+        cropControl.append("button")
+                          .attr("class", "btn btn-default dropdown-toggle")
+                          .attr("data-toggle", "dropdown")
+                          .html("Crops <span class='caret'></span>");
+
+        cropControl.append("ul")
+                   .attr("class", "dropdown-menu")
+                   .attr("role", "menu");
 
         for(var i = 0; i < crops.length; i++){
-            cropControl.append("li")
+            cropControl.select("ul").append("li")
+                       .attr("role", "presentation")
                        .html(crops[i]);
         }
 
@@ -252,15 +263,22 @@ function draw(geo_data) {
         return cropControl;
     }
 
-    function addYearControl(years){
-        var yearControl = d3.select("body").append("ul")
+    function addYearControl(){
+
+        var yearControl = d3.select("body").append("input")
           .attr("class", "year-control")
+          .attr("type", "text")
+          .attr("data-slider-min", yearStart)
+          .attr("data-slider-max", yearEnd)
+          .attr("data-slider-step", 1)
+          .attr("data-slider-value", yearEnd)
           .style("opacity", 0);
 
-        for(var i = 0; i < years.length; i++){
-            yearControl.append("li")
-                       .html(years[i]);
-        }
+        new Slider('.year-control', {
+            formatter: function(value) {
+                return 'Year: ' + value;
+            }
+        });
 
         yearControl.transition()
                    .duration(200)
@@ -328,12 +346,14 @@ function draw(geo_data) {
                 cropControl.selectAll("li")
                            .on("click", function(){
                                 crop = d3.select(this).html();
+                                cropControl.select("button").html(crop + " <span class='caret'></span>");
                                 update(year, crop);
                            });
 
-                yearControl = addYearControl(years);
+                yearControl = addYearControl();
                 yearControl.selectAll("li")
-                           .on("click", function(){
+                           .on("change", function(){  // TODO: improve using slider documentation
+                                console.log(d3.select(this));
                                 year = d3.select(this).html();
                                 update(year, crop)});
             }
@@ -341,6 +361,7 @@ function draw(geo_data) {
 
         // animation
         // TODO: function startAnimation
+        // TODO: remove array of years!
         var year_idx = 0;
 
         var year_interval = setInterval(function() {
