@@ -63,6 +63,31 @@ a.more {
     cursor: pointer;
 }
 
+.year-control{
+    border: 1px solid red;
+}
+
 .year-control>li{
     cursor: pointer;
+}
+
+
+#year-slider.slider.slider-horizontal{
+    width: 1000px;
+    left: 200px;
+}
+
+#year-slider.slider-selection {
+	background: #BABABA;
+}
+
+#year-slider.slider-handle.custom {
+	background: transparent none;
+}
+
+#year-slider.slider-handle.custom::before {
+	line-height: 20px;
+	font-size: 20px;
+	content: '\1F34F';
+	color: #726204;
 }

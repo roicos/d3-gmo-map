@@ -3,7 +3,7 @@ function draw(geo_data) {
 
     var pathToData = "./data/data.tsv";
     var yearStart = 1992;
-    var yearEnd = 1995;
+    var yearEnd = 2016;
 
     // map
     // TODO: function drawMap
@@ -86,14 +86,6 @@ function draw(geo_data) {
 
         // South Korea, New Zeland, Norway
         return centroid;
-    }
-
-    function getYearsList(){
-        var years = [];
-        for(var i = yearStart; i <= yearEnd; i ++) {
-                    years.push(i);
-        }
-        return years;
     }
 
     function getCropsList(data){
@@ -265,26 +257,36 @@ function draw(geo_data) {
 
     function addYearControl(){
 
-        var yearControl = d3.select("body").append("input")
+        var years = [];
+        for(var i=yearStart; i<=yearEnd; i++){
+            years.push(i);
+        }
+
+        var yearControlHtml = d3.select("body").append("input")
           .attr("class", "year-control")
           .attr("type", "text")
+          .attr("data-slider-id", "year-slider")
           .attr("data-slider-min", yearStart)
           .attr("data-slider-max", yearEnd)
           .attr("data-slider-step", 1)
           .attr("data-slider-value", yearEnd)
+          .attr("data-slider-handle", "custom")
+          .attr("data-slider-ticks", years)
+          .attr("data-slider-ticks-labels", years)
+          .attr("ticks_snap_bounds", 30)
           .style("opacity", 0);
 
-        new Slider('.year-control', {
-            formatter: function(value) {
-                return 'Year: ' + value;
-            }
+        var yearControlSlider = new Slider('.year-control', {
+            ticks: years,
+            ticks_labels: years,
+            ticks_snap_bounds: 30
         });
 
-        yearControl.transition()
+        yearControlHtml.transition()
                    .duration(200)
                    .style("opacity", .9);
 
-        return yearControl;
+        return yearControlSlider;
     }
 
     // data
@@ -296,7 +298,6 @@ function draw(geo_data) {
         var circles;
 
         var cropsList = getCropsList(data);
-        var years = getYearsList();
 
         var cropControl;
         var yearControl;
@@ -351,25 +352,22 @@ function draw(geo_data) {
                            });
 
                 yearControl = addYearControl();
-                yearControl.selectAll("li")
-                           .on("change", function(){  // TODO: improve using slider documentation
-                                console.log(d3.select(this));
-                                year = d3.select(this).html();
-                                update(year, crop)});
+                yearControl.on("change", function(){
+                                year = yearControl.getValue();
+                                update(year, crop);
+                            });
             }
 
 
         // animation
-        // TODO: function startAnimation
-        // TODO: remove array of years!
-        var year_idx = 0;
 
-        var year_interval = setInterval(function() {
-            update(years[year_idx], null);
-            year_idx++;
+        var year = yearStart;
+        var interval = setInterval(function() {
+            update(year, null);
+            year++;
 
-            if(year_idx >= years.length) {
-                clearInterval(year_interval);
+            if(year >= yearEnd) {
+                clearInterval(interval);
                 addControls();
             }
         }, 1000);
