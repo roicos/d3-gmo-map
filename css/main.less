@@ -1,11 +1,17 @@
+/* Colors */
+@tooltipBackground: #FEDA00;
+@tooltipStroke: #abce00;
+@infoBackground: #acaf82;
+@infoStroke: #abce00;
+
 div.tooltip {
     position: absolute;
     text-align: center;
     height: 14px;
     padding: 2px;
     font: 12px sans-serif;
-    background: lightsteelblue;
-    border: 1px solid #8aa26e;
+    background: @tooltipBackground;
+    border: 1px solid @tooltipStroke;
     border-radius: 8px;
     pointer-events: none;
     color: #3c4b52;
@@ -19,8 +25,8 @@ div.info {
     width: 1200px;
     padding: 2px;
     font: 12px sans-serif;
-    background: #f6f8e0;
-    border: 1px solid #8aa26e;
+    background: @infoBackground;
+    border: 1px solid @infoStroke;
     border-radius: 8px;
     pointer-events: none;
     color: #3c4b52;

@@ -5,6 +5,15 @@ function draw(geo_data) {
     var yearStart = 1992;
     var yearEnd = 2016;
 
+    // colors
+    var mainColor = "#bddbdb";
+    var darkText = "#8a1715";
+    var mainFill = "#b73060";
+    var highlightedFill = "#eb8505";
+    var mainStroke = "#5b1830";
+    var highlightedStroke = "#c0421a";
+    var darkStroke = "#0c032e";
+
     // map
     // TODO: function drawMap
 
@@ -35,8 +44,8 @@ function draw(geo_data) {
         .append('path')
         .attr('name', function(d){return d.id;})
         .attr('d', path)
-        .style('fill', '#e4eaa2')
-        .style('stroke', '#3c4b52')
+        .style('fill', mainColor)
+        .style('stroke', darkStroke)
         .style('stroke-width', 0.5);
 
     var EUCountries = ['AUT', 'BEL', 'BGR', 'HRV', 'CYP', 'CZE', 'DNK',
@@ -168,8 +177,9 @@ function draw(geo_data) {
 
     function showTooltip(d){
         d3.select(this)
-          .style('stroke', '#b91343')
-          .style('stroke-width', '3');
+          .style('fill', highlightedFill)
+          .style('stroke', highlightedStroke)
+          //.style('stroke-width', '1');
         tooltip.transition()
             .duration(200)
             .style("opacity", .9);
@@ -180,7 +190,8 @@ function draw(geo_data) {
 
     function hideTooltip(d){
         d3.select(this)
-          .style('stroke', '#244e04')
+          .style('fill', mainFill)
+          .style('stroke', mainStroke)
           .style('stroke-width', '1');
         tooltip.transition()
             .duration(500)
@@ -328,8 +339,8 @@ function draw(geo_data) {
                     .append("circle")
                     .attr('cx', function(d) {; return getCentroid(d.key)[0]; })
                     .attr('cy', function(d) { return getCentroid(d.key)[1];})
-                    .style('fill', '#8aa26e')
-                    .style('stroke', '#244e04');
+                    .style('fill', mainFill)
+                    .style('stroke', mainStroke);
 
             // update all circles
             circles.transition()
