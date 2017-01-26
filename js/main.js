@@ -152,7 +152,7 @@ function draw(geo_data) {
     }
 
     function keyFunc(d){
-        return d.key + "-" + calculateTradeNames(d);
+        return d.key/* + "-" + calculateTradeNames(d)*/;
     }
 
     function calculateRadius(cropsCount){
@@ -320,19 +320,21 @@ function draw(geo_data) {
             circles = svg.selectAll("circle")
                       .data(dataNested, keyFunc);
 
+            // remove circles not present in new dataset
             circles.exit().remove();
 
+            // new circles
             circles.enter()
                     .append("circle")
-                    .transition()
-                    .duration(500)
-                    .attr('cx', function(d) { return getCentroid(d.key)[0]; })
+                    .attr('cx', function(d) {; return getCentroid(d.key)[0]; })
                     .attr('cy', function(d) { return getCentroid(d.key)[1];})
                     .style('fill', '#8aa26e')
-                    .style('stroke', '#244e04')
-                    .attr("r", 0)  // TODO: remember old data and change radius from old to new
-                    .transition()
-                    .attr('r', function(d) {return calculateRadius(calculateTradeNames(d)); });
+                    .style('stroke', '#244e04');
+
+            // update all circles
+            circles.transition()
+                   .duration(500)
+                   .attr('r', function(d) {return calculateRadius(calculateTradeNames(d)); });
 
             circles.on("mouseover", showTooltip)
                    .on("mouseout", hideTooltip)
