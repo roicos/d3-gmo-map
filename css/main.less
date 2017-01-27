@@ -1,20 +1,22 @@
 /* Colors */
-@tooltipBackground: #FEDA00;
-@tooltipStroke: #abce00;
-@infoBackground: #acaf82;
-@infoStroke: #abce00;
+@background: #FFF;
+@tooltipColor: #c0421a;
+@infoMain: #5b1830;
+@lightBlue: #bddbdb;
+@darkBlue: #0c032e;
+@lightGrey: #e5e5e5;
+@darkGrey: #BEBEBE;
 
 div.tooltip {
     position: absolute;
     text-align: center;
-    height: 14px;
-    padding: 2px;
+    padding: 5px;
     font: 12px sans-serif;
-    background: @tooltipBackground;
-    border: 1px solid @tooltipStroke;
-    border-radius: 8px;
+    background: @background;
+    border: 1px solid @tooltipColor;
+    border-radius: 5px;
     pointer-events: none;
-    color: #3c4b52;
+    color: @tooltipColor;
 }
 
 div.info {
@@ -25,11 +27,10 @@ div.info {
     width: 1200px;
     padding: 2px;
     font: 12px sans-serif;
-    background: @infoBackground;
-    border: 1px solid @infoStroke;
+    background: @lightBlue;
+    border: 1px solid @infoMain;
     border-radius: 8px;
     pointer-events: none;
-    color: #3c4b52;
 }
 
 div.close{
@@ -42,18 +43,38 @@ div.close{
     pointer-events: auto;
 }
 
-div.info h2{
-    color: #b91343;
+div.info h4{
+    color: @infoMain;
+    font-weight: bold;
 }
 
 div.info ul  {
     list-style: none;
     text-align: left;
+    width: 1100px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+div.info ol{
+     list-style-position: inside;
+}
+
+div.info ol>li:nth-child(odd) {
+    background-color: @lightGrey;
+}
+
+div.info ol>li:nth-child(even) {
+    background-color: @darkGrey;
 }
 
 div.info h5 {
     cursor: pointer;
     pointer-events: auto;
+    background-color: @lightBlue;
+    font-weight: bold;
+    margin: 0;
+    padding: 5px;
 }
 
 a.more {
