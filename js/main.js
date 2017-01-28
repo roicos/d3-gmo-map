@@ -148,7 +148,7 @@ function draw(geo_data) {
             html += "<li><h5>" + crops[i].key + ": " + tradeNames.length + " sorts</h5>";
             html += "<ol class='trade-names'>"
             for(var j=0; j<tradeNames.length; j++){
-                html += "<li><p><b>Trade name:</b> " + tradeNames[j].key + "</p>";
+                html += "<li><b>Trade name:</b> " + tradeNames[j].key;
                 html += "<p><b>Developer:</b> " + tradeNames[j].values[0].developer +"</p>";
                 html += "<p><b>Modifications:</b> " + tradeNames[j].values[0].gmTrait + "</p>";
                 html += "<p><b>Gene sources:</b> " + tradeNames[j].values[0].geneSource + "</p>";
@@ -179,7 +179,6 @@ function draw(geo_data) {
         d3.select(this)
           .style('fill', highlightedFill)
           .style('stroke', highlightedStroke)
-          //.style('stroke-width', '1');
         tooltip.transition()
             .duration(200)
             .style("opacity", .9);
@@ -218,12 +217,24 @@ function draw(geo_data) {
                 .style("display", "none")
                 .style("height", 0);
             info.selectAll("h5").on("click", function(){
+
                 d3.selectAll(".trade-names")
                 .style("display", "none")
                 .style("height", 0);
-                d3.select(this.nextSibling)
-                .style("display",  "block")
-                .style("height", "auto");
+
+                if(d3.select(this).attr("class") != "active") {
+                    d3.select(this)
+                    .attr("class", "active");
+                    d3.select(this.nextSibling)
+                    .style("display",  "block")
+                    .style("height", "auto");
+                } else {
+                    d3.select(this)
+                    .attr("class", null);
+                    d3.select(this.nextSibling)
+                    .style("display",  "none")
+                    .style("height", 0);
+                }
             });
 
             var close = d3.select(".close");
@@ -315,8 +326,8 @@ function draw(geo_data) {
 
         function update(year, crop) {
 
-            console.log(year);
-            console.log(crop);
+            // console.log(year);
+            // console.log(crop);
 
             dataFiltered = data.filter(function(d) {
                   return calculateYear(d) <= year && (crop != null ? d.crop == crop : true);

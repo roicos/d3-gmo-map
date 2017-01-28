@@ -27,8 +27,8 @@ div.info {
     width: 1200px;
     padding: 2px;
     font: 12px sans-serif;
-    background: @lightBlue;
-    border: 1px solid @infoMain;
+    background: @background;
+    border: 1px solid @darkGrey;
     border-radius: 8px;
     pointer-events: none;
 }
@@ -43,21 +43,36 @@ div.close{
     pointer-events: auto;
 }
 
+/* info header */
 div.info h4{
-    color: @infoMain;
     font-weight: bold;
+    font-size: 14px;
+    margin: 20px 0;
 }
 
 div.info ul  {
     list-style: none;
     text-align: left;
     width: 1100px;
-    margin: 0 auto;
+    margin: 0 auto 20px auto;
     padding: 0;
+}
+
+div.info ul>li {
+    border: 1px solid @lightGrey;
+    border-bottom: none;
+}
+
+div.info ul>li:last-child{
+    border-bottom: 1px solid @lightGrey;
 }
 
 div.info ol{
      list-style-position: inside;
+}
+
+div.info ol>li {
+    margin-left: -40px;
 }
 
 div.info ol>li:nth-child(odd) {
@@ -68,6 +83,7 @@ div.info ol>li:nth-child(even) {
     background-color: @darkGrey;
 }
 
+/* crops headers */
 div.info h5 {
     cursor: pointer;
     pointer-events: auto;
@@ -75,6 +91,15 @@ div.info h5 {
     font-weight: bold;
     margin: 0;
     padding: 5px;
+    font-size: 12px;
+}
+
+div.info h5.active{
+    color: @infoMain;
+}
+
+div.info ol>li>p{
+    margin: 0 0 0 15px;
 }
 
 a.more {
