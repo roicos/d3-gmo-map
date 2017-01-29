@@ -21,7 +21,7 @@ div.tooltip {
 
 div.info {
     position: absolute;
-    top: 0px;
+    top: 20px;
     left: 100px;
     text-align: center;
     width: 1200px;
@@ -34,8 +34,8 @@ div.info {
 }
 
 div.close{
-    width: 16px;
-    height: 16px;
+    width: 32px;
+    height: 32px;
     background-image: url("close.png");
     position: absolute;
     top: 5px;
@@ -98,6 +98,11 @@ div.info h5.active{
     color: @infoMain;
 }
 
+div.info ol>li {
+    padding: 10px 30px 10px 10px;
+    position: relative;
+}
+
 div.info ol>li>p{
     margin: 0 0 0 15px;
 }
@@ -105,6 +110,13 @@ div.info ol>li>p{
 a.more {
      cursor: pointer;
      pointer-events: auto;
+     position: absolute;
+     right: 20px;
+     top: 30px;
+     display: block;
+     width: 16px;
+     height: 16px;
+     background-image: url("more.png");
 }
 
 .crop-control{

@@ -152,7 +152,9 @@ function draw(geo_data) {
                 html += "<p><b>Developer:</b> " + tradeNames[j].values[0].developer +"</p>";
                 html += "<p><b>Modifications:</b> " + tradeNames[j].values[0].gmTrait + "</p>";
                 html += "<p><b>Gene sources:</b> " + tradeNames[j].values[0].geneSource + "</p>";
-                html += "<a herf = 'http://www.isaaa.org/gmapprovaldatabase/event/default.asp?EventID='" + tradeNames[j].values[0].id + " class='more'>read more</a></li>";
+                html += "<a target = '_blank' title='read more'"
+                      + " href = 'http://www.isaaa.org/gmapprovaldatabase/event/default.asp?EventID="
+                      + tradeNames[j].values[0].id + "' class='more'></a></li>";
             }
             html += "</ol></li>";
         }
@@ -206,8 +208,9 @@ function draw(geo_data) {
     function showInfo(d){
              hideTooltip(d);
             info.transition()
-            .duration(200)
-            .style("opacity", .9);
+                .duration(200)
+                .style("height", "auto")
+                .style("opacity", .9);
 
             info.html("<div class='close'></div><h4>"
             + getCountryName(d) + ": " + calculateCrops(d)
@@ -244,7 +247,8 @@ function draw(geo_data) {
     function hideInfo(d){
         info.transition()
             .duration(500)
-            .style("opacity", 0);
+            .style("opacity", 0)
+            .style("height", 0);
     }
 
     // controls
