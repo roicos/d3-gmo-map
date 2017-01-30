@@ -3,7 +3,7 @@ function draw(geo_data) {
 
     var pathToData = "./data/data.tsv";
     var yearStart = 1992;
-    var yearEnd = 2016;
+    var yearEnd = 1996;
 
     // colors
     var mainColor = "#bddbdb";
@@ -254,13 +254,12 @@ function draw(geo_data) {
     // controls
 
     function addCropControl(crops){
-        var cropControl = d3.select("body")
+        var cropControl = d3.select("#controls")
                                    .append("div")
-                                   .attr("class", "dropup crop-control")
-                                   .style("opacity", 0);
+                                   .attr("class", "dropdown crop-control");
 
         cropControl.append("button")
-                          .attr("class", "btn btn-default dropdown-toggle")
+                          .attr("class", "btn btn-default dropdown-toggle btn-sm")
                           .attr("data-toggle", "dropdown")
                           .html("Crops <span class='caret'></span>");
 
@@ -274,10 +273,6 @@ function draw(geo_data) {
                        .html(crops[i]);
         }
 
-        cropControl.transition()
-                   .duration(200)
-                   .style("opacity", .9);
-
         return cropControl;
     }
 
@@ -288,7 +283,7 @@ function draw(geo_data) {
             years.push(i);
         }
 
-        var yearControlHtml = d3.select("body").append("input")
+        var yearControlHtml = d3.select("#controls").append("input")
           .attr("class", "year-control")
           .attr("type", "text")
           .attr("data-slider-id", "year-slider")
@@ -307,10 +302,6 @@ function draw(geo_data) {
             ticks_labels: years,
             ticks_snap_bounds: 30
         });
-
-        yearControlHtml.transition()
-                   .duration(200)
-                   .style("opacity", .9);
 
         return yearControlSlider;
     }
@@ -371,6 +362,11 @@ function draw(geo_data) {
 
                 var year = yearEnd, crop = null;
 
+                var controlsWrapper = d3.select("body")
+                                    .append("div")
+                                    .attr("id", "controls")
+                                    .style("opacity", 0);
+
                 cropControl = addCropControl(cropsList);
                 cropControl.selectAll("li")
                            .on("click", function(){
@@ -384,6 +380,10 @@ function draw(geo_data) {
                                 year = yearControl.getValue();
                                 update(year, crop);
                             });
+
+                controlsWrapper.transition()
+                               .duration(200)
+                               .style("opacity", .9);
             }
 
 
