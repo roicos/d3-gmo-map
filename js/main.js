@@ -3,7 +3,7 @@ function draw(geo_data) {
 
     var pathToData = "./data/data.tsv";
     var yearStart = 1992;
-    var yearEnd = 1996;
+    var yearEnd = 2016;
 
     // colors
     var mainColor = "#bddbdb";
@@ -264,7 +264,7 @@ function draw(geo_data) {
                           .html("Crops <span class='caret'></span>");
 
         cropControl.append("ul")
-                   .attr("class", "dropdown-menu")
+                   .attr("class", "dropdown-menu scrollable-menu")
                    .attr("role", "menu");
 
         for(var i = 0; i < crops.length; i++){
