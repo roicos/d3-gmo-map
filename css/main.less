@@ -36,6 +36,7 @@ div.info {
     border: 1px solid @darkGrey;
     border-radius: 8px;
     pointer-events: none;
+    z-index: 1000;
 }
 
 div.close{
@@ -134,11 +135,25 @@ a.more {
     top: 320px;
     left: 200px;
     width: 200px;
-    height: 100px;
+    height: 130px;
    -webkit-box-shadow: 2px 2px 2px 0px rgba(53, 53, 53, 0.75);
    -moz-box-shadow:    2px 2px 2px 0px rgba(53, 53, 53, 0.75);
     box-shadow:         2px 2px 2px 0px rgba(53, 53, 53, 0.75);
     z-index: 10;
+}
+
+.crops-header{
+    color: @darkViolet;
+    font-weight: bold;
+    width: 40px;
+    margin: 0 auto;
+}
+
+.year-header{
+    color: @darkViolet;
+    font-weight: bold;
+    width: 40px;
+    margin: 40px auto;
 }
 
 .crop-control {
@@ -173,7 +188,7 @@ a.more {
 #year-slider{
     width: 160px;
     margin-left: 17px;
-    top: 50px;
+    top: 30px;
 }
 
 .slider.slider-horizontal .slider-track-high{

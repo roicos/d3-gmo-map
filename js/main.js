@@ -262,11 +262,15 @@ function draw(geo_data) {
         cropControl.append("button")
                           .attr("class", "btn btn-default dropdown-toggle btn-sm")
                           .attr("data-toggle", "dropdown")
-                          .html("Crops <span class='caret'></span>");
+                          .html("All <span class='caret'></span>");
 
         cropControl.append("ul")
                    .attr("class", "dropdown-menu scrollable-menu")
                    .attr("role", "menu");
+
+        cropControl.select("ul").append("li")
+                           .attr("role", "presentation")
+                           .html("All");
 
         for(var i = 0; i < crops.length; i++){
             cropControl.select("ul").append("li")
@@ -360,11 +364,18 @@ function draw(geo_data) {
                                     .attr("id", "controls")
                                     .style("opacity", 0);
 
+                controlsWrapper.append("p")
+                               .attr("class", "crops-header")
+                               .html("Crop");
+
                 cropControl = addCropControl(cropsList);
                 cropControl.selectAll("li")
                            .on("click", function(){
                                 crop = d3.select(this).html();
                                 cropControl.select("button").html(crop + " <span class='caret'></span>");
+                                if(crop == "All") {
+                                    crop = null;
+                                }
                                 update(year, crop);
                            });
 
@@ -373,6 +384,10 @@ function draw(geo_data) {
                                 year = yearControl.getValue();
                                 update(year, crop);
                             });
+
+                d3.select("#controls").append("p")
+                    .attr("class", "year-header")
+                    .html("Year");
 
                 controlsWrapper.transition()
                                .duration(200)
