@@ -226,6 +226,7 @@ function draw(geo_data) {
                 .style("height", 0);
 
                 if(d3.select(this).attr("class") != "active") {
+                    info.selectAll("h5").attr("class", null);
                     d3.select(this)
                     .attr("class", "active");
                     d3.select(this.nextSibling)
@@ -291,17 +292,9 @@ function draw(geo_data) {
           .attr("data-slider-max", yearEnd)
           .attr("data-slider-step", 1)
           .attr("data-slider-value", yearEnd)
-          .attr("data-slider-handle", "custom")
-          .attr("data-slider-ticks", years)
-          .attr("data-slider-ticks-labels", years)
-          .attr("ticks_snap_bounds", 30)
           .style("opacity", 0);
 
-        var yearControlSlider = new Slider('.year-control', {
-            ticks: years,
-            ticks_labels: years,
-            ticks_snap_bounds: 30
-        });
+        var yearControlSlider = new Slider('.year-control', {});
 
         return yearControlSlider;
     }
