@@ -14,8 +14,7 @@ function draw(geo_data) {
     var highlightedStroke = "#c0421a";
     var darkStroke = "#0c032e";
 
-    // map
-    // TODO: function drawMap
+    // draw map
 
     var margin = 75;
     var width = 1400 - margin;
@@ -35,6 +34,7 @@ function draw(geo_data) {
     var map = svg.append('g')
         .attr('class', 'map');
 
+    // group for EU
     var EU = map.append('g')
             .attr('name', 'EU');
 
@@ -64,8 +64,12 @@ function draw(geo_data) {
     // helpers
 
     function getCentroid(countryCode){
+        // group EU and absent SGP
         var selector = '[name='+(countryCode == "EU" ? "DEU" : (countryCode == "SGP" ? "MYS" : countryCode.trim()))+']';
+
         var centroid = path.centroid(d3.select(selector).datum());
+
+        // correction for small islands, Alaska etc.
         switch(countryCode){
             case "SGP":
                 centroid[0] -=15;
@@ -79,21 +83,12 @@ function draw(geo_data) {
                 centroid[0] -=40;
                 centroid[1] +=50;
             break;
-            case "KOR": //ATF
-                centroid[0] +=40;
-                centroid[1] -=150;
-            break;
-            case "NZL": // NCL
-                centroid[0] +=10;
-                centroid[1] +=50;
-            break;
             case "NOR":
                 centroid[0] -=5;
                 centroid[1] +=50;
             break;
         }
 
-        // South Korea, New Zeland, Norway
         return centroid;
     }
 
@@ -178,6 +173,7 @@ function draw(geo_data) {
 
 
     function showTooltip(d){
+    console.log(d);
         d3.select(this)
           .style('fill', highlightedFill)
           .style('stroke', highlightedStroke)
@@ -222,22 +218,22 @@ function draw(geo_data) {
             info.selectAll("h5").on("click", function(){
 
                 d3.selectAll(".trade-names")
-                .style("display", "none")
-                .style("height", 0);
+                    .style("display", "none")
+                    .style("height", 0);
 
                 if(d3.select(this).attr("class") != "active") {
                     info.selectAll("h5").attr("class", null);
                     d3.select(this)
-                    .attr("class", "active");
+                        .attr("class", "active");
                     d3.select(this.nextSibling)
-                    .style("display",  "block")
-                    .style("height", "auto");
+                        .style("display",  "block")
+                        .style("height", "auto");
                 } else {
                     d3.select(this)
-                    .attr("class", null);
+                        .attr("class", null);
                     d3.select(this.nextSibling)
-                    .style("display",  "none")
-                    .style("height", 0);
+                        .style("display",  "none")
+                        .style("height", 0);
                 }
             });
 
@@ -340,7 +336,7 @@ function draw(geo_data) {
             // new circles
             circles.enter()
                     .append("circle")
-                    .attr('cx', function(d) {; return getCentroid(d.key)[0]; })
+                    .attr('cx', function(d) { return getCentroid(d.key)[0]; })
                     .attr('cy', function(d) { return getCentroid(d.key)[1];})
                     .style('fill', mainFill)
                     .style('stroke', mainStroke);

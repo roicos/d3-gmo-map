@@ -261,6 +261,12 @@ class GMODataParser {
 					approval.countryCode = "EU";
 				} else if (approval.country.equals("United States of America")){
 					approval.countryCode = "USA";
+				}  else if (approval.country.equals("New Zealand")){
+					approval.countryCode = "NZL";
+				} else if (approval.country.equals("South Africa")){
+					approval.countryCode = "ZAF";
+				} else if (approval.country.equals("South Korea")){
+					approval.countryCode = "KOR";
 				} else {
 					approval.countryCode = getCountryCode(approval.country);
 				}
