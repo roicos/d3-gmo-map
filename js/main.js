@@ -173,7 +173,6 @@ function draw(geo_data) {
 
 
     function showTooltip(d){
-    console.log(d);
         d3.select(this)
           .style('fill', highlightedFill)
           .style('stroke', highlightedStroke)
@@ -345,15 +344,12 @@ function draw(geo_data) {
             circles.transition()
                    .duration(500)
                    .attr('r', function(d) {return calculateRadius(calculateTradeNames(d)); });
-
-            circles.on("mouseover", showTooltip)
-                   .on("mouseout", hideTooltip)
-                   .on("click", showInfo);
             }
 
             function addControls() {
 
                 var year = yearEnd, crop = null;
+                var yearWrapper = d3.select(".year-wrapper");
 
                 var controlsWrapper = d3.select("body")
                                     .append("div")
@@ -378,6 +374,7 @@ function draw(geo_data) {
                 yearControl = addYearControl();
                 yearControl.on("change", function(){
                                 year = yearControl.getValue();
+                                yearWrapper.html(year);
                                 update(year, crop);
                             });
 
@@ -394,12 +391,19 @@ function draw(geo_data) {
         // animation
 
         var year = yearStart;
+        var yearWrapper = d3.select("body")
+                            .append("div")
+                            .attr("class", "year-wrapper");
         var interval = setInterval(function() {
+            yearWrapper.html(year);
             update(year, null);
             year++;
 
-            if(year >= yearEnd) {
+            if(year > yearEnd) {
                 clearInterval(interval);
+                circles.on("mouseover", showTooltip)
+                       .on("mouseout", hideTooltip)
+                       .on("click", showInfo);
                 addControls();
             }
         }, 1000);
